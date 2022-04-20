@@ -1254,6 +1254,8 @@ static const struct power_supply_desc batt_psy_desc = {
 	.property_is_writeable	= battery_psy_prop_is_writeable,
 };
 
+#include "qti_power_meter.c"
+
 static int battery_chg_init_psy(struct battery_chg_dev *bcdev)
 {
 	struct power_supply_config psy_cfg = {};
