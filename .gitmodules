@@ -1,0 +1,4 @@
+[submodule "arch/arm64/boot/dts/vendor"]
+	path = arch/arm64/boot/dts/vendor
+	url = git@github.com:dgist-datalab/hdk-dt.git
+	branch = waipio-hdk
