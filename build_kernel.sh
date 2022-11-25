@@ -22,6 +22,43 @@ else
 	make "$@" || exit 1
 fi
 
+(
+  # Build dtbo.img
+  fdtoverlaymerge \
+    -i arch/arm64/boot/dts/vendor/qcom/waipiop-hdk-pm8010-overlay.dtbo \
+    arch/arm64/boot/dts/vendor/qcom/audio/waipio-audio-hdk.dtbo \
+    arch/arm64/boot/dts/vendor/qcom/camera/waipio-camera-sensor-mtp.dtbo \
+    arch/arm64/boot/dts/vendor/qcom/display/waipio-sde-display-hdk-overlay.dtbo \
+    -o .dtbo
+  mkdtimg create dtbo.img --page_size=4096 .dtbo
+) &
+
+(
+  # Build vendor_boot.img (with dtb)
+  fdtoverlay \
+    -i arch/arm64/boot/dts/vendor/qcom/waipiop.dtb \
+    -o .dtb \
+    arch/arm64/boot/dts/vendor/qcom/audio/waipio-audio.dtbo \
+    arch/arm64/boot/dts/vendor/qcom/camera/waipio-camera.dtbo \
+    arch/arm64/boot/dts/vendor/qcom/display/waipio-sde.dtbo \
+    arch/arm64/boot/dts/vendor/qcom/mmrm/waipio-mmrm.dtbo \
+    arch/arm64/boot/dts/vendor/qcom/mmrm/waipio-mmrm-test.dtbo \
+    arch/arm64/boot/dts/vendor/qcom/video/waipio-vidc.dtbo
+  mkbootimg.py \
+    --header_version 4 \
+    --pagesize 0x00001000 \
+    --base 0x00000000 \
+    --kernel_offset 0x00008000 \
+    --ramdisk_offset 0x01000000 \
+    --tags_offset 0x00000100 \
+    --dtb_offset 0x0000000001f00000 \
+    --vendor_cmdline 'video=vfb:640x400,bpp=32,memsize=3072000 bootconfig buildvariant=userdebug' \
+    --dtb .dtb \
+    --vendor_bootconfig vendor_boot/bootconfig \
+    --ramdisk_type 1 --ramdisk_name '' --vendor_ramdisk_fragment vendor_boot/vendor_ramdisk00 \
+    --vendor_boot vendor_boot.img
+) &
+
 echo "Building new ramdisk"
 #remove previous ramfs files
 rm -rf '$RAMFS_TMP'*
@@ -61,6 +98,7 @@ if [[ $GENERATED_SIZE -gt $PARTITION_SIZE ]]; then
 	exit 1
 fi
 
+wait
 echo "done"
-ls -al boot.img
+ls -al boot.img dtbo.img vendor_boot.img
 echo ""
