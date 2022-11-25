@@ -777,6 +777,7 @@ static const __initconst char * const blacklist[] = {
 	// Module behavior differences
 	"cfg80211",
 	"mac80211",
+	"hwmon",
 
 	// Name difference
 	"lzo_rle",
