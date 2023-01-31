@@ -1852,6 +1852,7 @@ CONFIG_NVME_MULTIPATH=y
 CONFIG_NVME_HWMON=y
 # CONFIG_NVME_FC is not set
 # CONFIG_NVME_TCP is not set
+# CONFIG_MSM_SDEXPRESS is not set
 # CONFIG_NVME_TARGET is not set
 # end of NVME Support
 
